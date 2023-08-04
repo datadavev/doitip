@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "doitoy"
+version = "0.1.0"
+description = "doitoy is a python tool for toying with DOIs"
+authors = ["datadavev <605409+datadavev@users.noreply.github.com>"]
+license = "Apache 2.0"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+click = "^8.1.6"
+requests = "^2.31.0"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.2.1"
+
+[tool.poetry.scripts]
+doi = "doitoy.__main__:main"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
