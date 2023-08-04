@@ -2,6 +2,8 @@
 instance/
 dbs/
 .vscode
+.idea
+.envrc
 
 docs/diagrams/C4-PlantUML
 
