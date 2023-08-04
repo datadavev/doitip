@@ -29,3 +29,14 @@ def test_identifier_parse(guid, default_scheme, expected):
     assert pid.scheme == expected[0]
     assert pid.curator == expected[1]
     assert pid.value == expected[2]
+
+
+test_str = (
+    ("doi:12345/foo?bar", "doi", "doi:12345/foo?bar"),
+    ("12345/foo?bar", "doi", "doi:12345/foo?bar"),
+    (" 12345/foo?bar ", "doi", "doi:12345/foo?bar"),
+)
+@pytest.mark.parametrize("guid,default_scheme,expected", test_str)
+def test_identifier_parse(guid, default_scheme, expected):
+    pid = doitoy.model.Identifier.parse(guid, default_scheme=default_scheme)
+    assert str(pid) == expected

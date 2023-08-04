@@ -15,6 +15,13 @@ class Identifier:
     curator: typing.Optional[str] = None
     value: typing.Optional[str] = None
 
+    def __str__(self) -> str:
+        s = f"{self.scheme}:" if not None else ''
+        v = f"/{self.value}" if not None else ''
+        if self.curator is None:
+            return s
+        return f"{s}{self.curator}{v}"
+
     @classmethod
     def parse(cls, identifier: str, default_scheme=None) -> 'Identifier':
         identifier = identifier.strip()
