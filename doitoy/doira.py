@@ -60,6 +60,9 @@ class CrossrefDoiRA(DoiRA):
         return self._get_response(response)
 
     def get_publisher_info(self, doi: doitoy.model.Identifier):
+        # https://crossref.gitlab.io/knowledge_base/docs/services/get-prefix-publisher/
+        # see also:
+        # https://api.crossref.org/swagger-ui/index.html#/Prefixes/get_prefixes__prefix_
         url = "https://doi.crossref.org/getPrefixPublisher/"
         params = {"prefix": doi.curator}
         headers = {"Accept": "application/json"}
@@ -67,6 +70,7 @@ class CrossrefDoiRA(DoiRA):
         return self._get_response(response)
 
     def get_pid_metadata(self, doi: doitoy.model.Identifier):
+        # https://api.crossref.org/swagger-ui/index.html#/Works/get_works
         url = f"https://api.crossref.org/works/{identifier_as_doistr(doi)}"
         headers = {"Accept": "application/json"}
         response = requests.get(url, headers=headers)
@@ -78,6 +82,7 @@ class DataciteDoiRA(DoiRA):
         super().__init__("Datacite")
 
     def get_prefixes(self):
+        # https://support.datacite.org/reference/get_prefixes
         headers = {"Accept": "application/json"}
         url = "https://api.datacite.org/prefixes"
         response = requests.get(url, headers=headers)
@@ -89,6 +94,7 @@ class DataciteDoiRA(DoiRA):
         }
 
     def get_pid_metadata(self, doi: doitoy.model.Identifier):
+        # https://support.datacite.org/reference/get_dois-id
         url = f"https://api.datacite.org/dois/{identifier_as_doistr(doi)}"
         headers = {"Accept": "application/json"}
         response = requests.get(url, headers=headers)
