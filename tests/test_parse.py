@@ -12,15 +12,16 @@ test_re = (
     ("10.12345/foo/bar", "doi", ("doi", "10.12345", "foo/bar")),
 )
 
+
 @pytest.mark.parametrize("guid,default_scheme,expected", test_re)
 def test_parse(guid, default_scheme, expected):
-    match = re.fullmatch(doitoy.model.IDENTIFIER_PATTERN, guid)
+    match = re.fullmatch(doitoy.model.Identifier.pattern, guid)
     if guid == "":
         assert match.group("scheme") is None
     else:
-        assert match.group('scheme') in [expected[0], None]
-        assert match.group('curator') in [expected[1], '']
-        assert match.group('value') in [expected[2], '']
+        assert match.group("scheme") in [expected[0], None]
+        assert match.group("curator") in [expected[1], ""]
+        assert match.group("value") in [expected[2], ""]
 
 
 @pytest.mark.parametrize("guid,default_scheme,expected", test_re)
@@ -36,6 +37,8 @@ test_str = (
     ("12345/foo?bar", "doi", "doi:12345/foo?bar"),
     (" 12345/foo?bar ", "doi", "doi:12345/foo?bar"),
 )
+
+
 @pytest.mark.parametrize("guid,default_scheme,expected", test_str)
 def test_identifier_parse(guid, default_scheme, expected):
     pid = doitoy.model.Identifier.parse(guid, default_scheme=default_scheme)
