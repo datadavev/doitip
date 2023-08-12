@@ -18,10 +18,6 @@ def main():
     return 0
 
 
-def redirect_hook(r, *args, **kwargs):
-    print(r.url)
-
-
 @main.command()
 @click.argument("doi")
 @click.option(
@@ -50,20 +46,25 @@ def resolve(doi, accept):
     }
     result = []
     with requests.get(
-        url, headers=headers, timeout=REQUEST_TIMEOUT, allow_redirects=True, stream=True, #hooks=hooks
+        url, headers=headers, timeout=REQUEST_TIMEOUT, allow_redirects=True, stream=True
     ) as resp:
         for r in resp.history:
-            result.append({
-                "url": r.url,
-                "status": r.status_code,
-                "elapsed_ms": (r.elapsed.microseconds / 1000.0)
-            })
-        result.append({
-            "url": resp.url,
-            "status": resp.status_code,
-            "elapsed_ms": (resp.elapsed.microseconds / 1000.0)
-        })
+            result.append(
+                {
+                    "url": r.url,
+                    "status": r.status_code,
+                    "elapsed_ms": (r.elapsed.microseconds / 1000.0),
+                }
+            )
+        result.append(
+            {
+                "url": resp.url,
+                "status": resp.status_code,
+                "elapsed_ms": (resp.elapsed.microseconds / 1000.0),
+            }
+        )
     print(json.dumps(result, indent=2))
+
 
 @main.command()
 @click.argument("doi")
