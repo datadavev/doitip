@@ -104,10 +104,33 @@ class DataciteDoiRA(DoiRA):
         return self._get_response(response)
 
 
+class MedraDoiRA(DoiRA):
+
+    def __init__(self):
+        # https://api.medra.org/
+        super().__init__("mEDRA")
+
+    def get_prefixes(self):
+        raise NotImplementedError()
+
+    def get_publisher_info(self, doi: doitip.model.Identifier):
+        return {
+            "note": "Publisher info not available for mEDRA"
+        }
+
+    def get_pid_metadata(self, doi: doitip.model.Identifier):
+        url = f"https://api.medra.org/metadata/{identifier_as_doistr(doi)}"
+        headers = {"Accept": "application/json,q=1.0; text/xml,q=0.9"}
+        response = requests.get(url, headers=headers)
+        return self._get_response(response)
+
+
+
 def list_ras() -> typing.List[DoiRA]:
     ras = {
         "datacite": DataciteDoiRA,
         "crossref": CrossrefDoiRA,
+        "medra": MedraDoiRA,
     }
     return ras
 
