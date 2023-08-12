@@ -1,9 +1,9 @@
 import typing
 import requests
-import doitoy.model
+import doitip.model
 
 
-def identifier_as_doistr(pid: doitoy.model.Identifier) -> str:
+def identifier_as_doistr(pid: doitip.model.Identifier) -> str:
     if pid.curator is None:
         raise ValueError(f"Provided DOI has no DOI prefix: '{pid}'")
     return f"{pid.curator}/{pid.value if not None else ''}"
@@ -12,6 +12,9 @@ def identifier_as_doistr(pid: doitoy.model.Identifier) -> str:
 class DoiRA:
     def __init__(self, name: str):
         self.name = name
+
+    def __str__(self)->str:
+        return self.name
 
     def _get_response(self, response) -> typing.Dict:
         err_msg = None
@@ -28,19 +31,19 @@ class DoiRA:
     def get_prefixes(self):
         raise NotImplementedError
 
-    def get_handle_info(self, doi: doitoy.model.Identifier):
+    def get_handle_info(self, doi: doitip.model.Identifier):
         url = f"https://doi.org/api/handles/{identifier_as_doistr(doi)}"
         headers = {"Accept": "application/json"}
         response = requests.get(url, headers=headers)
         return self._get_response(response)
 
-    def get_publisher_info(self, doi: doitoy.model.Identifier):
+    def get_publisher_info(self, doi: doitip.model.Identifier):
         raise NotImplementedError
 
-    def get_pid_metadata(self, doi: doitoy.model.Identifier):
+    def get_pid_metadata(self, doi: doitip.model.Identifier):
         raise NotImplementedError
 
-    def info(self, doi: doitoy.model.Identifier):
+    def info(self, doi: doitip.model.Identifier):
         return {
             "handle": self.get_handle_info(doi),
             "prefix": self.get_publisher_info(doi),
@@ -59,7 +62,7 @@ class CrossrefDoiRA(DoiRA):
         response = requests.get(url, params=params, headers=headers)
         return self._get_response(response)
 
-    def get_publisher_info(self, doi: doitoy.model.Identifier):
+    def get_publisher_info(self, doi: doitip.model.Identifier):
         # https://crossref.gitlab.io/knowledge_base/docs/services/get-prefix-publisher/
         # see also:
         # https://api.crossref.org/swagger-ui/index.html#/Prefixes/get_prefixes__prefix_
@@ -69,7 +72,7 @@ class CrossrefDoiRA(DoiRA):
         response = requests.get(url, params=params, headers=headers)
         return self._get_response(response)
 
-    def get_pid_metadata(self, doi: doitoy.model.Identifier):
+    def get_pid_metadata(self, doi: doitip.model.Identifier):
         # https://api.crossref.org/swagger-ui/index.html#/Works/get_works
         url = f"https://api.crossref.org/works/{identifier_as_doistr(doi)}"
         headers = {"Accept": "application/json"}
@@ -88,12 +91,12 @@ class DataciteDoiRA(DoiRA):
         response = requests.get(url, headers=headers)
         return self._get_response(response)
 
-    def get_publisher_info(self, doi: doitoy.model.Identifier):
+    def get_publisher_info(self, doi: doitip.model.Identifier):
         return {
             "note": "Datacite publisher info is in metadata record.",
         }
 
-    def get_pid_metadata(self, doi: doitoy.model.Identifier):
+    def get_pid_metadata(self, doi: doitip.model.Identifier):
         # https://support.datacite.org/reference/get_dois-id
         url = f"https://api.datacite.org/dois/{identifier_as_doistr(doi)}"
         headers = {"Accept": "application/json"}
@@ -101,15 +104,20 @@ class DataciteDoiRA(DoiRA):
         return self._get_response(response)
 
 
-def get_ra(ra_name: str) -> DoiRA:
-    handlers = {
+def list_ras() -> typing.List[DoiRA]:
+    ras = {
         "datacite": DataciteDoiRA,
         "crossref": CrossrefDoiRA,
     }
+    return ras
+
+
+def get_ra(ra_name: str) -> DoiRA:
+    handlers = list_ras()
     return handlers[ra_name]()
 
 
-def get_doi_ra(doi: doitoy.model.Identifier) -> DoiRA:
+def get_doi_ra(doi: doitip.model.Identifier) -> DoiRA:
     url = f"https://doi.org/doiRA/{identifier_as_doistr(doi)}"
     headers = {"Accept": "application/json"}
     ra_info = requests.get(url, headers=headers).json()

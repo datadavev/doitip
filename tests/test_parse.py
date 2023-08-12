@@ -1,6 +1,6 @@
 import re
 import pytest
-import doitoy.model
+import doitip.model
 
 test_re = (
     ("doi:10.12345/some/stuff", None, ("doi", "10.12345", "some/stuff")),
@@ -15,7 +15,7 @@ test_re = (
 
 @pytest.mark.parametrize("guid,default_scheme,expected", test_re)
 def test_parse(guid, default_scheme, expected):
-    match = re.fullmatch(doitoy.model.Identifier.pattern, guid)
+    match = re.fullmatch(doitip.model.Identifier.pattern, guid)
     if guid == "":
         assert match.group("scheme") is None
     else:
@@ -26,7 +26,7 @@ def test_parse(guid, default_scheme, expected):
 
 @pytest.mark.parametrize("guid,default_scheme,expected", test_re)
 def test_identifier_parse(guid, default_scheme, expected):
-    pid = doitoy.model.Identifier.parse(guid, default_scheme=default_scheme)
+    pid = doitip.model.Identifier.parse(guid, default_scheme=default_scheme)
     assert pid.scheme == expected[0]
     assert pid.curator == expected[1]
     assert pid.value == expected[2]
@@ -41,5 +41,5 @@ test_str = (
 
 @pytest.mark.parametrize("guid,default_scheme,expected", test_str)
 def test_identifier_parse(guid, default_scheme, expected):
-    pid = doitoy.model.Identifier.parse(guid, default_scheme=default_scheme)
+    pid = doitip.model.Identifier.parse(guid, default_scheme=default_scheme)
     assert str(pid) == expected
