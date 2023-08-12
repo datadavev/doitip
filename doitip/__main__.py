@@ -39,11 +39,6 @@ def resolve(doi, accept):
         "User-Agent": USER_AGENT,
     }
     url = f"{DOI_URL}/{doitip.doira.identifier_as_doistr(pid)}"
-    hooks = {
-        "response": [
-            redirect_hook,
-        ]
-    }
     result = []
     with requests.get(
         url, headers=headers, timeout=REQUEST_TIMEOUT, allow_redirects=True, stream=True
