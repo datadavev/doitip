@@ -1,5 +1,6 @@
-# doitoy
+# doitip
 
-`doitoy` is a python tool for exploring DOIs.
+`doitip` is a python tool for exploring DOIs.
+
 
 
