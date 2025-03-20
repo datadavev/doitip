@@ -1,3 +1,4 @@
+import logging
 import typing
 import requests
 import doitip.model
@@ -12,12 +13,14 @@ def identifier_as_doistr(pid: doitip.model.Identifier) -> str:
 class DoiRA:
     def __init__(self, name: str):
         self.name = name
+        self._L = logging.getLogger(self.name)
 
-    def __str__(self)->str:
+    def __str__(self) -> str:
         return self.name
 
     def _get_response(self, response) -> typing.Dict:
         err_msg = None
+        self._L.info("URL: (%s) %s", response.status_code, response.url)
         if response.status_code == 200:
             try:
                 return response.json()
@@ -28,8 +31,11 @@ class DoiRA:
             "message": err_msg if not None else response.text,
         }
 
+    def create_identifier(self, metadata: typing.Dict) -> doitip.model.Identifier:
+        raise NotImplementedError()
+
     def get_prefixes(self):
-        raise NotImplementedError
+        raise NotImplementedError()
 
     def get_handle_info(self, doi: doitip.model.Identifier):
         url = f"https://doi.org/api/handles/{identifier_as_doistr(doi)}"
@@ -38,10 +44,13 @@ class DoiRA:
         return self._get_response(response)
 
     def get_publisher_info(self, doi: doitip.model.Identifier):
-        raise NotImplementedError
+        raise NotImplementedError()
 
     def get_pid_metadata(self, doi: doitip.model.Identifier):
-        raise NotImplementedError
+        raise NotImplementedError()
+
+    def get_providers(self):
+        raise NotImplementedError()
 
     def info(self, doi: doitip.model.Identifier):
         return {
@@ -103,9 +112,14 @@ class DataciteDoiRA(DoiRA):
         response = requests.get(url, headers=headers)
         return self._get_response(response)
 
+    def get_providers(self):
+        headers = {"Accept": "application/json"}
+        url = "https://api.datacite.org/providers"
+        response = requests.get(url, headers=headers)
+        return self._get_response(response)
+
 
 class MedraDoiRA(DoiRA):
-
     def __init__(self):
         # https://api.medra.org/
         super().__init__("mEDRA")
@@ -114,16 +128,13 @@ class MedraDoiRA(DoiRA):
         raise NotImplementedError()
 
     def get_publisher_info(self, doi: doitip.model.Identifier):
-        return {
-            "note": "Publisher info not available for mEDRA"
-        }
+        return {"note": "Publisher info not available for mEDRA"}
 
     def get_pid_metadata(self, doi: doitip.model.Identifier):
         url = f"https://api.medra.org/metadata/{identifier_as_doistr(doi)}"
         headers = {"Accept": "application/json,q=1.0; text/xml,q=0.9"}
         response = requests.get(url, headers=headers)
         return self._get_response(response)
-
 
 
 def list_ras() -> typing.List[DoiRA]:

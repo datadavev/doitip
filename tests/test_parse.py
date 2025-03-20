@@ -40,6 +40,6 @@ test_str = (
 
 
 @pytest.mark.parametrize("guid,default_scheme,expected", test_str)
-def test_identifier_parse(guid, default_scheme, expected):
+def test_identifier_parse2(guid, default_scheme, expected):
     pid = doitip.model.Identifier.parse(guid, default_scheme=default_scheme)
     assert str(pid) == expected

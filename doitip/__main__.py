@@ -1,4 +1,5 @@
 import json
+import logging
 import sys
 import click
 import requests
@@ -12,9 +13,16 @@ USER_AGENT = requests_toolbelt.user_agent("doitip", doitip.__version__)
 REQUEST_TIMEOUT = 10.0
 
 
+def getLogger():
+    return logging.getLogger("doitip")
+
+
 @click.group()
 @click.version_option(USER_AGENT)
 def main():
+    logging.basicConfig(level=logging.INFO)
+    L = getLogger()
+    L.info("DOI Tip")
     return 0
 
 
@@ -106,6 +114,20 @@ def prefixes(ra_name):
     ra_name = ra_name.lower()
     ra = doitip.doira.get_ra(ra_name)
     prefixes = ra.get_prefixes()
+    print(json.dumps(prefixes, indent=2))
+
+
+@main.command()
+@click.argument("ra_name")
+def providers(ra_name):
+    """List providers participating in a Registration Agency.
+
+    e.g.: doi providers datacite | jq '.data[] | \\
+     [.id,.attributes.name,.attributes.memberType]'
+    """
+    ra_name = ra_name.lower()
+    ra = doitip.doira.get_ra(ra_name)
+    prefixes = ra.get_providers()
     print(json.dumps(prefixes, indent=2))
 
 
