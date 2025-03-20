@@ -1,6 +1,8 @@
+# Update version with a command like:
+# uvx --from=toml-cli toml set --toml-path=pyproject.toml project.version 0.2.0
 [project]
 name = "doitip"
-version = "0.1.0"
+version = "0.2.0"
 description = "doitip is a python tool for exploring DOIs"
 authors = [{ name = "datadavev", email = "605409+datadavev@users.noreply.github.com" }]
 requires-python = ">=3.10"
