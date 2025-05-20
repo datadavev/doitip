@@ -122,13 +122,14 @@ def prefixes(ra_name):
 def providers(ra_name):
     """List providers participating in a Registration Agency.
 
-    e.g.: doi providers datacite | jq '.data[] | \\
-     [.id,.attributes.name,.attributes.memberType]'
+    Output is a JSON dict of provider info per line
+
+    e.g.: doi providers datacite | jq '[.id,.attributes.name,.attributes.memberType]'
     """
     ra_name = ra_name.lower()
     ra = doitip.doira.get_ra(ra_name)
-    prefixes = ra.get_providers()
-    print(json.dumps(prefixes, indent=2))
+    for provider in ra.get_providers():
+        print(json.dumps(provider))
 
 
 @main.command()

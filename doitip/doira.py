@@ -113,10 +113,21 @@ class DataciteDoiRA(DoiRA):
         return self._get_response(response)
 
     def get_providers(self):
+        L = logging.getLogger("datacite")
         headers = {"Accept": "application/json"}
         url = "https://api.datacite.org/providers"
-        response = requests.get(url, headers=headers)
-        return self._get_response(response)
+        current_page = 0
+        page_size = 100
+        total_pages = 1000
+        while current_page < total_pages:
+            params = {"page[number]": current_page, "page[size]": page_size}
+            response = requests.get(url, headers=headers, params=params)
+            data = response.json()
+            total_pages = data.get("meta", {}).get("totalPages")
+            for item in data.get("data", []):
+                yield item
+            current_page += 1
+            L.info("Page %s of %s", current_page, total_pages)
 
 
 class MedraDoiRA(DoiRA):
