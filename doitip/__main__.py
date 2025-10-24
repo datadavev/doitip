@@ -5,6 +5,7 @@ import click
 import requests
 import requests_toolbelt
 import doitip
+import doitip.commons
 import doitip.model
 import doitip.doira
 
@@ -22,6 +23,9 @@ def getLogger():
 def main():
     logging.basicConfig(level=logging.INFO)
     L = getLogger()
+    logging.getLogger("httpcore").setLevel(logging.ERROR)
+    logging.getLogger("gql").setLevel(logging.ERROR)
+    logging.getLogger("httpx").setLevel(logging.ERROR)
     L.info("DOI Tip")
     return 0
 
@@ -137,6 +141,29 @@ def ras():
     """List Registration Agencies known to this tool."""
     _ras = doitip.doira.list_ras()
     print(json.dumps([str(_ra) for _ra in _ras], indent=2))
+
+
+@main.command("graph")
+@click.argument("doi")
+@click.option(
+    "-d", "--depth", default=0, help="depth of recursion", type=click.IntRange(0, 10)
+)
+def query_commons(doi: str, depth: int) -> None:
+    """Retrieve information from Datacite Commons for identifier."""
+    dc = doitip.commons.Commons()
+    # for item in dc.getRelated(doi):
+    #    print(item)
+    all_ids = set()
+    all_ids.add(doi)
+    for item in dc.graphRelated(doi, max_depth=depth):
+        print(item)
+        if isinstance(item, doitip.commons.Entity):
+            all_ids.add(item.pid)
+        else:
+            all_ids.add(item.pid2)
+    print("All PIDs:")
+    for pid in all_ids:
+        print(pid)
 
 
 if __name__ == "__main__":

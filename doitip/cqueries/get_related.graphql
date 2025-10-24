@@ -1,0 +1,59 @@
+query getRelated($id: ID!) {
+  work(id:$id) {
+    allRelatedCount
+    otherRelatedCount
+    partCount
+    partOfCount
+    url
+    id
+    type
+    __typename
+    types {
+      resourceType
+      resourceTypeGeneral
+    }
+    titles {
+      title
+    }
+    geolocations {
+      geolocationPlace
+      geolocationPoint {
+        pointLatitude
+        pointLongitude
+        __typename
+      }
+    }
+    allRelated {
+      fieldsOfScience {
+        title
+      }
+      nodes {
+        url
+        id
+        type
+        __typename
+        types {
+          resourceType
+          resourceTypeGeneral
+        }
+        titles {
+          title
+          titleType
+        }
+        geolocations{
+          geolocationPlace
+          geolocationBox{
+            westBoundLongitude
+            southBoundLatitude
+            eastBoundLongitude
+            northBoundLatitude
+          }
+          geolocationPoint{
+            pointLongitude
+            pointLatitude
+          }
+        }
+      }
+    }
+  }
+}

@@ -8,6 +8,7 @@ authors = [{ name = "datadavev", email = "605409+datadavev@users.noreply.github.
 requires-python = ">=3.10"
 dependencies = [
     "click>=8.1.6",
+    "gql[all]>=4.0.0",
     "requests>=2.31.0",
     "requests-toolbelt>=1.0.0",
 ]

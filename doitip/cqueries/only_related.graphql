@@ -1,0 +1,34 @@
+query onlyRelated($id: ID!) {
+  work(id:$id) {
+    titles {
+      title
+    }
+    url
+    type
+    __typename
+    geolocations {
+      geolocationPlace
+      geolocationPoint {
+        pointLatitude
+        pointLongitude
+        __typename
+      }
+    }
+    creators{
+      id
+      givenName
+      familyName
+      name
+      affiliation {
+        id
+        name
+      }
+    }
+    allRelated {
+      nodes {
+        id
+        type
+      }
+    }
+  }
+}
